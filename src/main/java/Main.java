@@ -6,12 +6,18 @@ public class Main {
         
         while (true) {
             System.out.print("$ ");
-            String command = sc.nextLine();
+            String input = sc.nextLine();
+            String command = input.substring(0,4);
+            String arguments = input.substring(5);
             
             if (command.trim().equals("exit")) {
                 break;
             } else if (command.startsWith("echo")) {
                 System.out.println(command.substring(5));
+            } else if (command.startsWith("type")) {
+                if (command.equals("echo") || command.equals("exit")) {
+                    System.out.println(command + " is a shell builtin");
+                }
             } else {
                 System.out.println(command + ": command not found");
             }
