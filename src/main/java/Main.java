@@ -15,6 +15,7 @@ public class Main {
             } else {
                 System.out.println(command + ": command not found");
             }
-        }        
+        }
+        sc.close();     
     }
 }
