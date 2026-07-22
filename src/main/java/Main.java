@@ -13,7 +13,7 @@ public class Main {
             if (command.trim().equals("exit")) {
                 break;
             } else if (command.startsWith("echo")) {
-                System.out.println(command.substring(5));
+                System.out.println(arguments);
             } else if (command.startsWith("type")) {
                 if (arguments.equals("echo") || arguments.equals("exit") || arguments.equals("type")) {
                     System.out.println(arguments + " is a shell builtin");
