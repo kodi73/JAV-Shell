@@ -17,7 +17,7 @@ public class Main {
                 File file = new File(targetDir);
 
                 if (file.exists() && file.isDirectory()) {
-                    System.setProperty("user.dir", "targetDir");
+                    System.setProperty("user.dir", file.getAbsolutePath());
                 } else {
                     System.out.println("cd: " + targetDir + ": No such file or directory");
                 }
