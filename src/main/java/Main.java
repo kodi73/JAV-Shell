@@ -14,6 +14,9 @@ public class Main {
                 break;
             } else if (input.startsWith("cd ")) {
                 String targetDir = input.substring(3);
+                if (targetDir.equals("~")) {
+                    targetDir = System.getenv("HOME");
+                }
                 File file;
 
                 if (targetDir.startsWith("/")) {
