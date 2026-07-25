@@ -10,19 +10,23 @@ public class Main {
             System.out.print("$ ");
             String input = sc.nextLine();
 
-            int spaceIndex = input.indexOf(' ');
-            String command = spaceIndex == -1 ? input : input.substring(0, spaceIndex);
-            String arguments = spaceIndex == -1 ? "" : input.substring(spaceIndex + 1).trim();
-
-            if (command.equals("exit")) {
+            if (input.startsWith("exit")) {
                 break;
-            } else if (command.equals("pwd")) {
-                String currentDir = new File(".").getAbsolutePath();
-                System.out.println(currentDir.substring(0, currentDir.length() - 2));
-            } else if (command.equals("echo")) {
-                System.out.println(arguments);
-            } else if (command.equals("type")) {
-                System.out.println(type(arguments));
+            } else if (input.startsWith("cd ")) {
+                String targetDir = input.substring(3);
+                File file = new File(targetDir);
+
+                if (file.exists() && file.isDirectory()) {
+                    System.setProperty("user.dir", "targetDir");
+                } else {
+                    System.out.println("cd: " + targetDir + ": No such file or directory");
+                }
+            } else if (input.startsWith("pwd")) {
+                System.out.println(System.getProperty("user.dir"));
+            } else if (input.startsWith("echo")) {
+                System.out.println(input.substring(5));
+            } else if (input.startsWith("type")) {
+                System.out.println(type(input.substring(5)));
             } else {
                 String[] inputParts = input.split(" ");
                 String path = System.getenv("PATH");
@@ -41,7 +45,7 @@ public class Main {
                 if (programExistsAndExecutable) {
                     runExternal(inputParts);
                 } else {
-                    System.out.println(command + ": command not found");
+                    System.out.println(inputParts[0] + ": command not found");
                 }
             }
         }
