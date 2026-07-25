@@ -14,7 +14,13 @@ public class Main {
                 break;
             } else if (input.startsWith("cd ")) {
                 String targetDir = input.substring(3);
-                File file = new File(targetDir);
+                File file;
+
+                if (targetDir.startsWith("/")) {
+                    file = new File(targetDir);
+                } else {
+                    file = new File(System.getProperty("user.dir"), targetDir).getCanonicalFile();
+                }
 
                 if (file.exists() && file.isDirectory()) {
                     System.setProperty("user.dir", file.getAbsolutePath());
