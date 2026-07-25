@@ -1,8 +1,10 @@
+import java.io.File;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
+
         while (true) {
             System.out.print("$ ");
             String input = sc.nextLine();
@@ -16,15 +18,34 @@ public class Main {
             } else if (command.equals("echo")) {
                 System.out.println(arguments);
             } else if (command.equals("type")) {
-                if (arguments.equals("echo") || arguments.equals("exit") || arguments.equals("type")) {
-                    System.out.println(arguments + " is a shell builtin");
-                } else {
-                    System.out.println(arguments + ": not found");
-                }
+                System.out.println(type(arguments));
             } else {
                 System.out.println(command + ": command not found");
             }
         }
         sc.close();
+    }
+
+    private static String type(String command) {
+        String[] builtIns = { "echo", "exit", "type" };
+
+        for (int i = 0; i < builtIns.length; i++) {
+            if (command.equals(builtIns[i])) {
+                return command + " is a shell builtin";
+            }
+        }
+
+        String path = System.getenv("PATH");
+        String[] pathDirs = path.split(File.pathSeparator);
+
+        for (int i = 0; i < pathDirs.length; i++) {
+            File file = new File(pathDirs[i], command);
+
+            if (file.exists() && file.canExecute()) {
+                return command + " is " + file.getAbsolutePath();
+            }
+        }
+
+        return command + ": not found";
     }
 }
