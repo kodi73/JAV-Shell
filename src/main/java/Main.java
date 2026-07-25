@@ -16,6 +16,9 @@ public class Main {
 
             if (command.equals("exit")) {
                 break;
+            } else if (command.equals("pwd")) {
+                String currentDir = new File(".").getAbsolutePath();
+                System.out.println(currentDir.substring(0, currentDir.length() - 1));
             } else if (command.equals("echo")) {
                 System.out.println(arguments);
             } else if (command.equals("type")) {
