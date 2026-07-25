@@ -49,7 +49,7 @@ public class Main {
     }
 
     private static String type(String command) {
-        String[] builtIns = { "echo", "exit", "type" };
+        String[] builtIns = { "echo", "exit", "type", "pwd" };
 
         for (int i = 0; i < builtIns.length; i++) {
             if (command.equals(builtIns[i])) {
