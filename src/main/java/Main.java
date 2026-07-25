@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -20,7 +21,25 @@ public class Main {
             } else if (command.equals("type")) {
                 System.out.println(type(arguments));
             } else {
-                System.out.println(command + ": command not found");
+                String[] inputParts = input.split(" ");
+                String path = System.getenv("PATH");
+                String[] pathDirs = path.split(File.pathSeparator);
+                boolean programExistsAndExecutable = false;
+
+                for (int i = 0; i < pathDirs.length; i++) {
+                    File file = new File(pathDirs[i], inputParts[0]);
+
+                    if (file.exists() && file.canExecute()) {
+                        programExistsAndExecutable = true;
+                        break;
+                    }
+                }
+
+                if (programExistsAndExecutable) {
+                    runExternal(inputParts);
+                } else {
+                    System.out.println(command + ": command not found");
+                }
             }
         }
         sc.close();
@@ -47,5 +66,12 @@ public class Main {
         }
 
         return command + ": not found";
+    }
+
+    private static void runExternal(String[] parts) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(Arrays.asList(parts));
+        pb.inheritIO();
+        Process process = pb.start();
+        process.waitFor();
     }
 }
