@@ -40,7 +40,7 @@ public class Main {
             } else if (input.startsWith("type")) {
                 System.out.println(type(input.substring(5)));
             } else {
-                String[] inputParts = input.split(" ");
+                String[] inputParts = parseCommand(input);
                 String path = System.getenv("PATH");
                 String[] pathDirs = path.split(File.pathSeparator);
                 boolean programExistsAndExecutable = false;
