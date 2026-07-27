@@ -108,6 +108,15 @@ public class Main {
                     current.append(input.charAt(i + 1));
                     i++;
                 }
+            } else if (ch == '\\' && inDoubleQuote) {
+                if (i + 1 < input.length()) {
+                    char next = input.charAt(i + 1);
+
+                    if (next == '"' || next == '\\') {
+                        current.append(next);
+                        i++;
+                    }
+                }
             } else if (ch == '\'' && !inDoubleQuote) {
                 inSingleQuote = !inSingleQuote;
             } else if (ch == '\"' && !inSingleQuote) {
