@@ -1,5 +1,7 @@
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -33,7 +35,8 @@ public class Main {
             } else if (input.startsWith("pwd")) {
                 System.out.println(System.getProperty("user.dir"));
             } else if (input.startsWith("echo")) {
-                System.out.println(input.substring(5));
+                String[] parts = parseCommand(input);
+                System.out.println(String.join(" ", Arrays.copyOfRange(parts, 1, parts.length)));
             } else if (input.startsWith("type")) {
                 System.out.println(type(input.substring(5)));
             } else {
@@ -89,5 +92,32 @@ public class Main {
         pb.inheritIO();
         Process process = pb.start();
         process.waitFor();
+    }
+
+    private static String[] parseCommand(String input) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inSingleQuote = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char ch = input.charAt(i);
+
+            if (ch == '\'') {
+                inSingleQuote = !inSingleQuote;
+            } else if (Character.isWhitespace(ch) && !inSingleQuote) {
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(ch);
+            }
+        }
+
+        if (current.length() > 0) {
+            tokens.add(current.toString());
+        }
+
+        return tokens.toArray(new String[0]);
     }
 }
