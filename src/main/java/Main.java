@@ -103,7 +103,12 @@ public class Main {
         for (int i = 0; i < input.length(); i++) {
             char ch = input.charAt(i);
 
-            if (ch == '\'' && !inDoubleQuote) {
+            if (ch == '\\' && !inSingleQuote && !inDoubleQuote) {
+                if (i + 1 < input.length()) {
+                    current.append(input.charAt(i + 1));
+                    i++;
+                }
+            } else if (ch == '\'' && !inDoubleQuote) {
                 inSingleQuote = !inSingleQuote;
             } else if (ch == '\"' && !inSingleQuote) {
                 inDoubleQuote = !inDoubleQuote;
