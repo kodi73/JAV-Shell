@@ -98,13 +98,16 @@ public class Main {
         List<String> tokens = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
 
         for (int i = 0; i < input.length(); i++) {
             char ch = input.charAt(i);
 
             if (ch == '\'') {
                 inSingleQuote = !inSingleQuote;
-            } else if (Character.isWhitespace(ch) && !inSingleQuote) {
+            } else if (ch == '\"') {
+                inDoubleQuote = !inDoubleQuote;
+            } else if (Character.isWhitespace(ch) && !inSingleQuote && !inDoubleQuote) {
                 if (current.length() > 0) {
                     tokens.add(current.toString());
                     current.setLength(0);
