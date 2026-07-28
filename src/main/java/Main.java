@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,10 +14,30 @@ public class Main {
             System.out.print("$ ");
             String input = sc.nextLine();
 
-            if (input.startsWith("exit")) {
+            String[] inputParts = parseCommand(input);
+            if (inputParts.length == 0) continue;
+
+            String outputFile = null;
+            List<String> argList = new ArrayList<>();
+
+            for (int i = 0; i < inputParts.length; i++) {
+                if ((inputParts[i].equals(">") || inputParts[i].equals("1>")) && i + 1 < inputParts.length) {
+                    outputFile = inputParts[i + 1];
+                    i++;
+                } else {
+                    argList.add(inputParts[i]);
+                }
+            }
+
+            String[] parts = argList.toArray(new String[0]);
+            if (parts.length == 0) continue;
+            String cmd = parts[0];
+
+            if (cmd.equals("exit")) {
                 break;
-            } else if (input.startsWith("cd ")) {
-                String targetDir = input.substring(3);
+            } else if (cmd.equals("cd")) {
+                String targetDir = parts.length > 1 ? parts[1] : System.getenv("HOME");
+                
                 if (targetDir.equals("~")) {
                     targetDir = System.getenv("HOME");
                 }
@@ -32,15 +54,15 @@ public class Main {
                 } else {
                     System.out.println("cd: " + targetDir + ": No such file or directory");
                 }
-            } else if (input.startsWith("pwd")) {
-                System.out.println(System.getProperty("user.dir"));
-            } else if (input.startsWith("echo")) {
-                String[] parts = parseCommand(input);
-                System.out.println(String.join(" ", Arrays.copyOfRange(parts, 1, parts.length)));
-            } else if (input.startsWith("type")) {
-                System.out.println(type(input.substring(5)));
+            } else if (cmd.equals("pwd")) {
+                writeOutput(System.getProperty("user.dir") + System.lineSeparator(), outputFile);
+            } else if (cmd.equals("echo")) {
+                String out = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
+                writeOutput(out + System.lineSeparator(), outputFile);
+            } else if (cmd.equals("type")) {
+                String typeArg = parts.length > 1 ? parts[1] : "";
+                writeOutput(type(typeArg) + System.lineSeparator(), outputFile);
             } else {
-                String[] inputParts = parseCommand(input);
                 String path = System.getenv("PATH");
                 String[] pathDirs = path.split(File.pathSeparator);
                 boolean programExistsAndExecutable = false;
@@ -55,7 +77,7 @@ public class Main {
                 }
 
                 if (programExistsAndExecutable) {
-                    runExternal(inputParts);
+                    runExternal(parts, outputFile);
                 } else {
                     System.out.println(inputParts[0] + ": command not found");
                 }
@@ -87,9 +109,14 @@ public class Main {
         return command + ": not found";
     }
 
-    private static void runExternal(String[] parts) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(Arrays.asList(parts));
+    private static void runExternal(String[] args, String outputFile) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(Arrays.asList(args));
         pb.inheritIO();
+
+        if (outputFile != null) {
+            pb.redirectOutput(new File(outputFile));
+        }
+
         Process process = pb.start();
         process.waitFor();
     }
@@ -136,5 +163,15 @@ public class Main {
         }
 
         return tokens.toArray(new String[0]);
+    }
+
+    private static void writeOutput(String text, String outputFile) throws IOException {
+        if (outputFile != null) {
+                FileWriter fw = new FileWriter(outputFile, false);
+                fw.write(text);
+                fw.close();
+        } else {
+                System.out.print(text);
+        }
     }
 }
