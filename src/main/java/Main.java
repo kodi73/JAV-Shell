@@ -37,6 +37,9 @@ public class Main {
             if (parts.length == 0) continue;
             String cmd = parts[0];
 
+            if (outputFile != null) new FileWriter(outputFile, false).close();
+            if (errorFile != null) new FileWriter(errorFile, false).close();
+
             if (cmd.equals("exit")) {
                 break;
             } else if (cmd.equals("cd")) {
