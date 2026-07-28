@@ -89,7 +89,7 @@ public class Main {
                 }
 
                 if (programExistsAndExecutable) {
-                    runExternal(parts, outputFile,errorFile);
+                    runExternal(parts, outputFile, errorFile, appendOutput);
                 } else {
                     writeError(inputParts[0] + ": command not found", errorFile);
                 }
@@ -121,12 +121,14 @@ public class Main {
         return command + ": not found";
     }
 
-    private static void runExternal(String[] args, String outputFile, String errorFile) throws Exception {
+    private static void runExternal(String[] args, String outputFile, String errorFile, boolean appendOutput) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(Arrays.asList(args));
         pb.inheritIO();
 
         if (outputFile != null) {
-            pb.redirectOutput(new File(outputFile));
+            pb.redirectOutput(appendOutput
+                            ? ProcessBuilder.Redirect.appendTo(new File(outputFile))
+                            : ProcessBuilder.Redirect.to(new File(outputFile)));
         }
         if (errorFile != null) {
             pb.redirectError(new File(errorFile));
