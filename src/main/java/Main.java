@@ -33,6 +33,10 @@ public class Main {
                     outputFile = inputParts[i + 1];
                     appendOutput = true;
                     i++;
+                } else if (inputParts[i].equals("2>>") && i + 1 < inputParts.length) {
+                    errorFile = inputParts[i + 1];
+                    appendOutput = true;
+                    i++;
                 } else {
                     argList.add(inputParts[i]);
                 }
@@ -43,7 +47,7 @@ public class Main {
             String cmd = parts[0];
 
             if (outputFile != null && !appendOutput) new FileWriter(outputFile, false).close();
-            if (errorFile != null) new FileWriter(errorFile, false).close();
+            if (errorFile != null && !appendOutput) new FileWriter(errorFile, false).close();
 
             if (cmd.equals("exit")) {
                 break;
@@ -64,7 +68,7 @@ public class Main {
                 if (file.exists() && file.isDirectory()) {
                     System.setProperty("user.dir", file.getAbsolutePath());
                 } else {
-                    writeError("cd: " + targetDir + ": No such file or directory", errorFile);
+                    writeError("cd: " + targetDir + ": No such file or directory", errorFile, appendOutput);
                 }
             } else if (cmd.equals("pwd")) {
                 writeOutput(System.getProperty("user.dir"), outputFile, appendOutput);
@@ -91,7 +95,7 @@ public class Main {
                 if (programExistsAndExecutable) {
                     runExternal(parts, outputFile, errorFile, appendOutput);
                 } else {
-                    writeError(inputParts[0] + ": command not found", errorFile);
+                    writeError(inputParts[0] + ": command not found", errorFile, appendOutput);
                 }
             }
         }
@@ -131,7 +135,9 @@ public class Main {
                             : ProcessBuilder.Redirect.to(new File(outputFile)));
         }
         if (errorFile != null) {
-            pb.redirectError(new File(errorFile));
+            pb.redirectError(appendOutput
+                            ? ProcessBuilder.Redirect.appendTo(new File(errorFile))
+                            : ProcessBuilder.Redirect.to(new File(errorFile)));
         }
 
         Process process = pb.start();
@@ -192,9 +198,9 @@ public class Main {
         }
     }
 
-    private static void writeError(String text, String errorFile) throws IOException {
+    private static void writeError(String text, String errorFile, boolean appendOutput) throws IOException {
         if (errorFile != null) {
-            FileWriter fw = new FileWriter(errorFile, false);
+            FileWriter fw = new FileWriter(errorFile, appendOutput);
             fw.write(text+System.lineSeparator());
             fw.close();
         } else {
