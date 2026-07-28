@@ -62,13 +62,13 @@ public class Main {
                     writeError("cd: " + targetDir + ": No such file or directory", errorFile);
                 }
             } else if (cmd.equals("pwd")) {
-                writeOutput(System.getProperty("user.dir") + System.lineSeparator(), outputFile);
+                writeOutput(System.getProperty("user.dir"), outputFile);
             } else if (cmd.equals("echo")) {
                 String out = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
-                writeOutput(out + System.lineSeparator(), outputFile);
+                writeOutput(out, outputFile);
             } else if (cmd.equals("type")) {
                 String typeArg = parts.length > 1 ? parts[1] : "";
-                writeOutput(type(typeArg) + System.lineSeparator(), outputFile);
+                writeOutput(type(typeArg), outputFile);
             } else {
                 String path = System.getenv("PATH");
                 String[] pathDirs = path.split(File.pathSeparator);
@@ -86,7 +86,7 @@ public class Main {
                 if (programExistsAndExecutable) {
                     runExternal(parts, outputFile,errorFile);
                 } else {
-                    writeError(inputParts[0] + ": command not found" + System.lineSeparator(), errorFile);
+                    writeError(inputParts[0] + ": command not found", errorFile);
                 }
             }
         }
@@ -178,7 +178,7 @@ public class Main {
     private static void writeOutput(String text, String outputFile) throws IOException {
         if (outputFile != null) {
                 FileWriter fw = new FileWriter(outputFile, false);
-                fw.write(text);
+                fw.write(text+System.lineSeparator());
                 fw.close();
         } else {
                 System.out.print(text);
@@ -188,7 +188,7 @@ public class Main {
     private static void writeError(String text, String errorFile) throws IOException {
         if (errorFile != null) {
             FileWriter fw = new FileWriter(errorFile, false);
-            fw.write(text);
+            fw.write(text+System.lineSeparator());
             fw.close();
         } else {
             System.err.print(text);
