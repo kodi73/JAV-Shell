@@ -42,7 +42,7 @@ public class Main {
             if (parts.length == 0) continue;
             String cmd = parts[0];
 
-            if (outputFile != null) new FileWriter(outputFile, false).close();
+            if (outputFile != null && !appendOutput) new FileWriter(outputFile, false).close();
             if (errorFile != null) new FileWriter(errorFile, false).close();
 
             if (cmd.equals("exit")) {
