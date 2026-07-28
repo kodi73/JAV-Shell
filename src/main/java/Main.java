@@ -19,6 +19,7 @@ public class Main {
 
             String outputFile = null;
             String errorFile = null;
+            boolean appendOutput = false;
             List<String> argList = new ArrayList<>();
 
             for (int i = 0; i < inputParts.length; i++) {
@@ -27,6 +28,10 @@ public class Main {
                     i++;
                 } else if (inputParts[i].equals("2>") && i + 1 < inputParts.length) {
                     errorFile = inputParts[i + 1];
+                    i++;
+                } else if (inputParts[i].equals(">>") && i + 1 < inputParts.length) {
+                    outputFile = inputParts[i + 1];
+                    appendOutput = true;
                     i++;
                 } else {
                     argList.add(inputParts[i]);
@@ -62,13 +67,13 @@ public class Main {
                     writeError("cd: " + targetDir + ": No such file or directory", errorFile);
                 }
             } else if (cmd.equals("pwd")) {
-                writeOutput(System.getProperty("user.dir"), outputFile);
+                writeOutput(System.getProperty("user.dir"), outputFile, appendOutput);
             } else if (cmd.equals("echo")) {
                 String out = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
-                writeOutput(out, outputFile);
+                writeOutput(out, outputFile, appendOutput);
             } else if (cmd.equals("type")) {
                 String typeArg = parts.length > 1 ? parts[1] : "";
-                writeOutput(type(typeArg), outputFile);
+                writeOutput(type(typeArg), outputFile, appendOutput);
             } else {
                 String path = System.getenv("PATH");
                 String[] pathDirs = path.split(File.pathSeparator);
@@ -175,9 +180,9 @@ public class Main {
         return tokens.toArray(new String[0]);
     }
 
-    private static void writeOutput(String text, String outputFile) throws IOException {
+    private static void writeOutput(String text, String outputFile, boolean appendOutput) throws IOException {
         if (outputFile != null) {
-                FileWriter fw = new FileWriter(outputFile, false);
+                FileWriter fw = new FileWriter(outputFile, appendOutput);
                 fw.write(text+System.lineSeparator());
                 fw.close();
         } else {
