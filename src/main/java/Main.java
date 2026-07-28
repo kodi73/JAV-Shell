@@ -181,7 +181,7 @@ public class Main {
                 fw.write(text);
                 fw.close();
         } else {
-                System.out.println(text);
+                System.out.print(text);
         }
     }
 
@@ -191,7 +191,7 @@ public class Main {
             fw.write(text);
             fw.close();
         } else {
-            System.err.println(text);
+            System.err.print(text);
         }
     }
 
