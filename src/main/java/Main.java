@@ -29,7 +29,7 @@ public class Main {
                 } else if (inputParts[i].equals("2>") && i + 1 < inputParts.length) {
                     errorFile = inputParts[i + 1];
                     i++;
-                } else if (inputParts[i].equals(">>") && i + 1 < inputParts.length) {
+                } else if ((inputParts[i].equals(">>") || inputParts[i].equals("1>>")) && i + 1 < inputParts.length) {
                     outputFile = inputParts[i + 1];
                     appendOutput = true;
                     i++;
