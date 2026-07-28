@@ -18,11 +18,15 @@ public class Main {
             if (inputParts.length == 0) continue;
 
             String outputFile = null;
+            String errorFile = null;
             List<String> argList = new ArrayList<>();
 
             for (int i = 0; i < inputParts.length; i++) {
                 if ((inputParts[i].equals(">") || inputParts[i].equals("1>")) && i + 1 < inputParts.length) {
                     outputFile = inputParts[i + 1];
+                    i++;
+                } else if (inputParts[i].equals("2>") && i + 1 < inputParts.length) {
+                    errorFile = inputParts[i + 1];
                     i++;
                 } else {
                     argList.add(inputParts[i]);
@@ -52,7 +56,7 @@ public class Main {
                 if (file.exists() && file.isDirectory()) {
                     System.setProperty("user.dir", file.getAbsolutePath());
                 } else {
-                    System.out.println("cd: " + targetDir + ": No such file or directory");
+                    writeError("cd: " + targetDir + ": No such file or directory", errorFile);
                 }
             } else if (cmd.equals("pwd")) {
                 writeOutput(System.getProperty("user.dir") + System.lineSeparator(), outputFile);
@@ -77,9 +81,9 @@ public class Main {
                 }
 
                 if (programExistsAndExecutable) {
-                    runExternal(parts, outputFile);
+                    runExternal(parts, outputFile,errorFile);
                 } else {
-                    System.out.println(inputParts[0] + ": command not found");
+                    writeError(inputParts[0] + ": command not found" + System.lineSeparator(), errorFile);
                 }
             }
         }
@@ -109,12 +113,15 @@ public class Main {
         return command + ": not found";
     }
 
-    private static void runExternal(String[] args, String outputFile) throws Exception {
+    private static void runExternal(String[] args, String outputFile, String errorFile) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(Arrays.asList(args));
         pb.inheritIO();
 
         if (outputFile != null) {
             pb.redirectOutput(new File(outputFile));
+        }
+        if (errorFile != null) {
+            pb.redirectError(new File(errorFile));
         }
 
         Process process = pb.start();
@@ -174,4 +181,15 @@ public class Main {
                 System.out.print(text);
         }
     }
+
+    private static void writeError(String text, String errorFile) throws IOException {
+        if (errorFile != null) {
+            FileWriter fw = new FileWriter(errorFile, false);
+            fw.write(text);
+            fw.close();
+        } else {
+            System.err.print(text);
+        }
+    }
+
 }
