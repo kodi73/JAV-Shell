@@ -5,15 +5,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import org.jline.reader.*;
+import org.jline.reader.impl.*;
+import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.terminal.*;
+import org.jline.terminal.impl.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Scanner sc = new Scanner(System.in);
+        Terminal terminal = TerminalBuilder.builder().system(true).build();
+        LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).completer(new StringsCompleter("echo", "exit")).build();
 
         while (true) {
-            System.out.print("$ ");
-            String input = sc.nextLine();
+            String input;
 
+            try {
+                input = lineReader.readLine("$ ");
+            } catch (UserInterruptException | EndOfFileException e) {
+                break;
+            }
+            
             String[] inputParts = parseCommand(input);
             if (inputParts.length == 0) continue;
 
@@ -99,7 +110,6 @@ public class Main {
                 }
             }
         }
-        sc.close();
     }
 
     private static String type(String command) {

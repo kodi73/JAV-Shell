@@ -8,6 +8,14 @@
     <artifactId>codecrafters-shell</artifactId>
     <version>1.0</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>3.26.1</version>
+        </dependency>
+    </dependencies>
+
    <properties>
         <maven.compiler.source>26</maven.compiler.source>
         <maven.compiler.target>26</maven.compiler.target>
