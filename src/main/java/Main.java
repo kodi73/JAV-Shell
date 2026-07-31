@@ -175,6 +175,8 @@ public class Main {
                     if (next == '"' || next == '\\') {
                         current.append(next);
                         i++;
+                    } else {
+                            current.append(ch);
                     }
                 }
             } else if (ch == '\'' && !inDoubleQuote) {
